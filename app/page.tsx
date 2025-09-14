@@ -1,7 +1,6 @@
 "use client"
 import axios from "axios"
 import { useState } from "react"
-import { text } from "stream/consumers"
 
 
 export default function Home() {
