@@ -1,6 +1,6 @@
 "use client"
 import axios from "axios"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 
 export default function Home() {
@@ -16,6 +16,14 @@ export default function Home() {
     setInput("")
     console.log(res.data)
   }
+
+
+  useEffect(() => {
+    if (textAreaRef.current) {
+      textAreaRef.current.style.height = "auto";
+      textAreaRef.current.style.height = textAreaRef.current.scrollHeight + "px"
+    }
+  }, [input])
 
   return (
     <div className="flex text-black min-h-screen ">
@@ -36,9 +44,19 @@ export default function Home() {
 
 
         <div className=" flex justify-center">
-          <div className="flex p-4 w-[600px] items-end bg-violet-950">
-            <textarea />
-            <button className="px-4 text-white py-2 bg-black rounded" onClick={sendMsgs}>send</button>
+          <div className="p-4 w-[600px] rounded-t-2xl bg-[#171717]">
+            <textarea
+              ref={textAreaRef}
+              className="flex-1 placeholder:text-[#A0A0A0]  w-[550px] outline-none rounded resize-none overflow-y-auto min-h-[40x] max-h-[120px]"
+              rows={2}
+              value={input}
+              onChange={(e) => { setInput(e.target.value) }}
+              placeholder="write your query?"
+            />
+            <div className="text-white  flex justify-between items-center ">
+              <span>Gemini 1.5 flash</span>
+              <button className="px-3 text-white py-2 bg-white rounded" onClick={sendMsgs}><img src={"/up-arrow.png"} width={15} /></button>
+            </div>
           </div>
         </div>
       </div>
