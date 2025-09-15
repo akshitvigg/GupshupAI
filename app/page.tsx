@@ -47,7 +47,7 @@ export default function Home() {
           <div className="p-4 w-[600px] rounded-t-2xl bg-[#171717]">
             <textarea
               ref={textAreaRef}
-              className="flex-1 placeholder:text-[#A0A0A0]  w-[550px] outline-none rounded resize-none overflow-y-auto min-h-[40x] max-h-[120px]"
+              className="flex-1 text-white placeholder:text-[#A0A0A0]  w-[550px] outline-none rounded resize-none overflow-y-auto min-h-[40x] max-h-[120px]"
               rows={2}
               value={input}
               onChange={(e) => { setInput(e.target.value) }}
@@ -55,7 +55,7 @@ export default function Home() {
             />
             <div className="text-white  flex justify-between items-center ">
               <span>Gemini 1.5 flash</span>
-              <button className="px-3 text-white py-2 bg-white rounded" onClick={sendMsgs}><img src={"/up-arrow.png"} width={15} /></button>
+              <button className="px-3 text-white  py-2.5 bg-white rounded-md" onClick={sendMsgs}><img src={"/up-arrow.png"} width={15} /></button>
             </div>
           </div>
         </div>
