@@ -28,9 +28,12 @@ export default function Home() {
   return (
     <div className="flex text-black min-h-screen ">
 
-      <div className={` ${sidebarOpen ? "w-44" : "w-14"} transition-all duration-300 ease-in-out   bg-[#171717] text-white`}>
-        <span onClick={() => setSidebarOpen(!sidebarOpen)}>heloo</span>
+      <div className={` ${sidebarOpen ? "w-44" : "w-16"} transition-all duration-300 ease-in-out   bg-[#171717] text-white`}>
+        <div className="py-4  flex ">
+          <button className=" hover:bg-neutral-800  ml-2 rounded-full p-3   " onClick={() => setSidebarOpen(!sidebarOpen)}><img width={18} src={'/menu-burger.png'} /></button>
+        </div>
       </div>
+
 
       {/* main chat area */}
       <div className="bg-[#0A0A0A] flex flex-col justify-between w-full">
@@ -44,7 +47,7 @@ export default function Home() {
 
 
         <div className=" flex justify-center">
-          <div className="p-4 w-[600px] rounded-t-2xl bg-[#171717]">
+          <i className="fi fi-br-menu-burger"></i>          <div className="p-4 w-[600px] rounded-t-2xl bg-[#171717]">
             <textarea
               ref={textAreaRef}
               className="flex-1 text-white placeholder:text-[#A0A0A0]  w-[550px] outline-none rounded resize-none overflow-y-auto min-h-[40x] max-h-[120px]"
