@@ -1,5 +1,6 @@
 "use client"
 import axios from "axios"
+import { resolve } from "dns"
 import { useEffect, useRef, useState } from "react"
 
 
@@ -10,11 +11,38 @@ export default function Home() {
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null)
 
   const sendMsgs = async () => {
+    if (!input.trim()) return;
 
-    const res = await axios.post("api/chat", { message: input })
-    setMsgs((prev) => [...prev, { role: "user", text: input }, { role: "assistant", text: res.data.text }])
+    setMsgs((prev) => [...prev, { role: "user", text: input }])
+
+    //for loading msg; 
+    const tempIndex = msgs.length + 1;
+    setMsgs((prev) => [...prev, { role: "assistant", text: "..." }])
+
+    const currentInput = input
     setInput("")
-    console.log(res.data)
+
+    try {
+
+      const res = await axios.post("api/chat", { message: currentInput })
+
+      setMsgs((prev) =>
+        prev.map((m, i) => (
+          i === tempIndex ? { role: "assistant", text: res.data.text } : m
+        ))
+      )
+
+      console.log(res.data)
+      console.log(msgs);
+
+    } catch (err) {
+      setMsgs((prev) =>
+        prev.map((m, i) => (
+          i === tempIndex ? { role: "assistant", text: "Error fetching response" } : m
+        ))
+      )
+
+    }
   }
 
 
@@ -37,16 +65,26 @@ export default function Home() {
 
       {/* main chat area */}
       <div className="bg-[#0A0A0A] flex flex-col justify-between w-full">
-        <div className=" flex-1 p-4 overflow-y-auto">
+        <div className=" flex-1 space-y-4 p-4 overflow-y-auto">
           {msgs.map((m, i) => (
-            <div key={i} className={`${m.role === "assistant" ? "text-green-400" : "text-white"}`}>
-              {m.text}
+            <div key={i} className=" w-full">
+              {m.role === "user" ?
+                <div className=" ml-auto  max-w-[70%] bg-[#2D2D2D] text-white px-4 py-2 rounded-lg whitespace-pre-wrap break-words">
+                  {m.text}
+                </div>
+                : <div className=" prose  prose-invert max-w-none text-gray-200 mx-auto leading-relaxed whitespace-pre-wrap">
+                  {m.text === "..." ?
+                    <span className="animate-pulse text-gray-400">Assistant is typing...</span>
+                    : m.text
+                  }
+                </div>
+              }
             </div>
           ))}
         </div>
 
 
-        <div className=" flex justify-center">
+        <div className=" flex sticky justify-center">
           <div className="p-4 w-[600px] rounded-t-2xl bg-[#171717]">
             <textarea
               ref={textAreaRef}
