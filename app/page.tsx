@@ -47,7 +47,7 @@ export default function Home() {
 
 
         <div className=" flex justify-center">
-          <i className="fi fi-br-menu-burger"></i>          <div className="p-4 w-[600px] rounded-t-2xl bg-[#171717]">
+          <div className="p-4 w-[600px] rounded-t-2xl bg-[#171717]">
             <textarea
               ref={textAreaRef}
               className="flex-1 text-white placeholder:text-[#A0A0A0]  w-[550px] outline-none rounded resize-none overflow-y-auto min-h-[40x] max-h-[120px]"
