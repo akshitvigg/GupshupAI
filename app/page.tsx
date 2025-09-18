@@ -7,7 +7,7 @@ import type { Components } from 'react-markdown'
 export default function Home() {
   const [msgs, setMsgs] = useState<{ role: string, text: string }[]>([])
   const [input, setInput] = useState("")
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null)
 
   const sendMsgs = async () => {
