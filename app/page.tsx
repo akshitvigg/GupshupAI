@@ -59,9 +59,10 @@ export default function Home() {
 
       {/* main chat area */}
       <div className="bg-[#0A0A0A]  flex flex-col w-full">
-        <div className="text-white px-20 py-3 border-b border-b-neutral-800  flex justify-between ">
-          <div className=" font-bold text-xl">
-            GupShupAI
+        <div className="text-white px-20 h-14  items-center border-b border-b-neutral-800  flex justify-between ">
+          <div className="  items-center flex text-xl">
+            <img src={"/gslogo.png"} className=" p-0 h-11 w-auto object-contain" />
+            <span className=" -translate-x-5" >GupShupAI</span>
           </div>
           <div className="px-3 py-1 rounded-full bg-blue-200">
             P
