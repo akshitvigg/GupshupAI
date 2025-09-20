@@ -58,7 +58,15 @@ export default function Home() {
       </div>
 
       {/* main chat area */}
-      <div className="bg-[#0A0A0A] flex flex-col w-full">
+      <div className="bg-[#0A0A0A]  flex flex-col w-full">
+        <div className="text-white flex justify-between bg-red-500">
+          <div className=" font-bold text-xl">
+            GupShupAI
+          </div>
+          <div className=" bg-blue-200">
+            P
+          </div>
+        </div>
         <div className="flex-1 p-6 overflow-y-auto space-y-16">
           {msgs.map((m, i) => (
             <div key={i} className="w-full max-w-4xl mx-auto px-4">
