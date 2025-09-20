@@ -76,7 +76,7 @@ export default function Home() {
             <img src={"/gslogo.png"} className="p-0 h-11 w-auto object-contain" />
             <span className="-translate-x-5">GupShupAI</span>
           </div>
-          <div className="px-3 py-1 rounded-full bg-blue-200">P</div>
+          <div className="px-3 py-1 rounded-full bg-[#9B1FE8]">A</div>
         </div>
 
         <div className="flex-1 p-6 overflow-y-auto space-y-16">
