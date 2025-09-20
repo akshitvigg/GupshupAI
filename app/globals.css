@@ -1,1 +1,33 @@
 @import "tailwindcss";
+
+@theme {
+  --font-sf-pro: 'SF Pro Display';
+  --font-sans: var(--font-geist-sans), sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
+}
+
+@font-face {
+  font-family: 'SF Pro Display';
+  src: url(/fonts/SFPRODISPLAYREGULAR.OTF) format('opentype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+
+}
+
+
+@font-face {
+  font-family: 'SF Pro Display';
+  src: url(/fonts/SFPRODISPLAYBOLD.OTF) format('opentype');
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SF Pro Display';
+  src: url(/fonts/SFPRODISPLAYMEDIUM.OTF) format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
