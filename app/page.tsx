@@ -46,7 +46,7 @@ export default function Home() {
   return (
     <div className="flex text-black min-h-screen">
       {/* sidebar */}
-      <div className={`${sidebarOpen ? "w-44" : "w-16"} transition-all duration-300 ease-in-out bg-[#171717] text-white`}>
+      <div className={`${sidebarOpen ? "w-44" : "w-16"} transition-all duration-300 ease-in-out bg-[#171717] border-r border-r-neutral-800 text-white`}>
         <div className="py-4 flex">
           <button
             className="hover:bg-neutral-800 ml-2 rounded-full p-3"
@@ -59,11 +59,11 @@ export default function Home() {
 
       {/* main chat area */}
       <div className="bg-[#0A0A0A]  flex flex-col w-full">
-        <div className="text-white flex justify-between bg-red-500">
+        <div className="text-white px-20 py-3 border-b border-b-neutral-800  flex justify-between ">
           <div className=" font-bold text-xl">
             GupShupAI
           </div>
-          <div className=" bg-blue-200">
+          <div className="px-3 py-1 rounded-full bg-blue-200">
             P
           </div>
         </div>
@@ -72,7 +72,7 @@ export default function Home() {
             <div key={i} className="w-full max-w-4xl mx-auto px-4">
               {m.role === "user" ? (
                 <div className="flex justify-end">
-                  <div className="inline-block max-w-[70%] bg-[#2D2D2D] text-white px-4 py-2 rounded-lg whitespace-pre-wrap break-words">
+                  <div className="inline-block max-w-[70%] bg-[#262626] text-white px-4 py-2 rounded-lg whitespace-pre-wrap break-words">
                     {m.text}
                   </div>
                 </div>
@@ -122,20 +122,21 @@ export default function Home() {
 
         {/* prompt area */}
         <div className="sticky bottom-0 flex justify-center">
-          <div className="p-4 w-[600px] rounded-t-2xl bg-[#171717]">
+          <div className="p-4 w-[600px] border-b-0 border  border-neutral-800 rounded-t-2xl bg-[#171717]">
             <textarea
               ref={textAreaRef}
-              className="flex-1 text-white placeholder:text-[#A0A0A0] w-full outline-none rounded resize-none overflow-y-auto min-h-[40px] max-h-[120px] p-2 bg-[#0A0A0A]"
+              className="flex-1 text-white placeholder:text-[#A0A0A0] w-full outline-none rounded resize-none overflow-y-auto min-h-[40px] max-h-[120px] p-2 "
               rows={2}
               value={input}
               onChange={(e) => { setInput(e.target.value) }}
               placeholder="Write your query..."
             />
             <div className="text-white flex justify-between items-center">
-              <span>Gemini 1.5 flash</span>
+              <span className=" text-neutral-400
+                ">Gemini 1.5 flash</span>
               <button
-                className="px-3 py-2.5 bg-white rounded-md"
-                onClick={sendMsgs}
+                className={`px-3 transition-all duration-200 py-3 active:scale-95 ${!input.trim() ? "bg-neutral-600 cursor-not-allowed" : "bg-white"} rounded-full`}
+                onClick={sendMsgs} title={`${!input.trim() ? "Message requires text" : ""}`}
               >
                 <img src={"/up-arrow.png"} width={15} />
               </button >
