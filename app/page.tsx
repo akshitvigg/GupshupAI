@@ -19,9 +19,12 @@ export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null)
+  const [showGreetings, setshowGreetings] = useState(true);
 
-  const sendMsgs = async () => {
-    const trimmed = input.trim()
+  const handleMessage = async (message: string) => {
+    if (showGreetings) setshowGreetings(false)
+
+    const trimmed = message.trim()
     if (!trimmed) return
 
     const userId = Date.now().toString()
@@ -44,6 +47,22 @@ export default function Home() {
       )
     }
   }
+
+  const sendMsgs = () => {
+    if (!input.trim()) return
+    handleMessage(input)
+    setInput("")
+  }
+
+
+  const handleKeypress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault()
+      sendMsgs();
+    }
+
+  }
+
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -81,7 +100,8 @@ export default function Home() {
         </div>
 
 
-        <GreetingsPrompt />
+        {showGreetings && <GreetingsPrompt onPromptClick={handleMessage} />
+        }
         <div className="flex-1 p-6 overflow-y-auto space-y-16">
           {msgs.map(m => (
             <div key={m.id} className="w-full max-w-4xl mx-auto px-4">
@@ -138,6 +158,7 @@ export default function Home() {
               ref={textAreaRef}
               className="flex-1  text-white placeholder:text-[#A0A0A0] w-full outline-none rounded resize-none overflow-y-auto min-h-[40px] max-h-[120px] p-2"
               rows={2}
+              onKeyPress={handleKeypress}
               value={input}
               onChange={e => setInput(e.target.value)}
               placeholder="Write your query..."
