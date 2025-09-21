@@ -5,6 +5,7 @@ import axios from "axios"
 import { useEffect, useRef, useState } from "react"
 import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'
+import GreetingsPrompt from "./components/greetings"
 
 type Message = {
   id: string;
@@ -74,11 +75,13 @@ export default function Home() {
         <div className="text-white px-20 h-14 items-center border-b border-b-neutral-800 flex justify-between">
           <div className="items-center flex text-xl">
             <img src={"/gslogo.png"} className="p-0 h-11 w-auto object-contain" />
-            <span className="-translate-x-5">GupShupAI</span>
+            <span className=" -translate-x-5">GupShupAI</span>
           </div>
           <div className="px-3 py-1 rounded-full bg-[#9B1FE8]">A</div>
         </div>
 
+
+        <GreetingsPrompt />
         <div className="flex-1 p-6 overflow-y-auto space-y-16">
           {msgs.map(m => (
             <div key={m.id} className="w-full max-w-4xl mx-auto px-4">
