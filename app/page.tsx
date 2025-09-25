@@ -156,7 +156,7 @@ export default function Home() {
           <div className="p-4 w-[600px] border-b-0 border border-neutral-800 rounded-t-2xl bg-[#171717]">
             <textarea
               ref={textAreaRef}
-              className="flex-1  text-white placeholder:text-[#A0A0A0] w-full outline-none rounded resize-none overflow-y-auto min-h-[40px] max-h-[120px] p-2"
+              className="flex-1 bg-red-500  text-white placeholder:text-[#A0A0A0] w-full outline-none rounded resize-none overflow-y-auto min-h-[40px] max-h-[120px] p-2"
               rows={2}
               onKeyPress={handleKeypress}
               value={input}
@@ -165,6 +165,7 @@ export default function Home() {
             />
             <div className="text-white flex justify-between items-center mt-2">
               <span className="text-neutral-400">Gemini 1.5 flash</span>
+            <p className=" text-xs text-neutral-500 translate-y-6 ">Built out of boredom by Akshit</p>
               <button
                 className={`px-3 py-3 rounded-full transition-all duration-200 active:scale-95 ${!input.trim() ? "bg-neutral-600 cursor-not-allowed" : "bg-white"
                   }`}
@@ -174,6 +175,7 @@ export default function Home() {
                 <img src={"/up-arrow.png"} width={15} />
               </button>
             </div>
+            
           </div>
         </div>
       </div>
