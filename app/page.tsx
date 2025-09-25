@@ -165,7 +165,7 @@ export default function Home() {
             />
             <div className="text-white flex justify-between items-center mt-2">
               <span className="text-neutral-400">Gemini 1.5 flash</span>
-            <p className=" text-xs text-neutral-500 translate-y-6 ">Built out of boredom by Akshit</p>
+            <p className=" text-xs text-neutral-500 -translate-x-5 translate-y-6 ">Built out of boredom by Akshit</p>
               <button
                 className={`px-3 py-3 rounded-full transition-all duration-200 active:scale-95 ${!input.trim() ? "bg-neutral-600 cursor-not-allowed" : "bg-white"
                   }`}
