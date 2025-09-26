@@ -13,37 +13,78 @@ type Message = {
   text: string;
 }
 
+type ChatSession = {
+  id: string;
+  title: string;
+  createdAt: number;
+  messages: Message[]
+}
+
 export default function Home() {
-  const [msgs, setMsgs] = useState<Message[]>([])
+  const [sessions, setSessions] = useState<ChatSession[]>([])
+  const [activeSessionId, setActiveSessionId] = useState<string | null>(null)
   const [input, setInput] = useState("")
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null)
-  const [showGreetings, setshowGreetings] = useState(true);
+  const [showGreetings, setShowGreetings] = useState(true)
+
+  const activeSession = sessions.find(s => s.id === activeSessionId)
+  const msgs = activeSession?.messages ?? []
 
   const handleMessage = async (message: string) => {
-    if (showGreetings) setshowGreetings(false)
+    if (showGreetings) setShowGreetings(false)
 
     const trimmed = message.trim()
-    if (!trimmed) return
+    if (!trimmed || !activeSessionId) return
 
     const userId = Date.now().toString()
     const assistantId = userId + "-assistant"
 
-    setMsgs(prev => [...prev, { id: userId, role: "user", text: trimmed }])
-    setMsgs(prev => [...prev, { id: assistantId, role: "assistant", text: "..." }])
-    setInput("")
+    setSessions(prev =>
+      prev.map(s =>
+        s.id === activeSessionId
+          ? {
+            ...s,
+            title: s.messages.length === 0 ? trimmed.slice(0, 20) : s.title,
+            messages: [
+              ...s.messages,
+              { id: userId, role: "user", text: trimmed },
+              { id: assistantId, role: "assistant", text: "..." }
+            ]
+          }
+          : s
+      )
+    )
 
     try {
       const res = await axios.post("api/chat", { message: trimmed })
       const text = res.data.text ?? "No response"
 
-      setMsgs(prev =>
-        prev.map(m => m.id === assistantId ? { ...m, text } : m)
+      setSessions(prev =>
+        prev.map(s =>
+          s.id === activeSessionId
+            ? {
+              ...s,
+              messages: s.messages.map(m =>
+                m.id === assistantId ? { ...m, text } : m
+              )
+            }
+            : s
+        )
       )
-    } catch (err) {
-      setMsgs(prev =>
-        prev.map(m => m.id === assistantId ? { ...m, text: "Error fetching response" } : m)
+    } catch {
+      setSessions(prev =>
+        prev.map(s =>
+          s.id === activeSessionId
+            ? {
+              ...s,
+              messages: s.messages.map(m =>
+                m.id === assistantId ? { ...m, text: "Error fetching response" } : m
+              )
+            }
+            : s
+        )
       )
     }
   }
@@ -54,15 +95,39 @@ export default function Home() {
     setInput("")
   }
 
-
   const handleKeypress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault()
-      sendMsgs();
+      sendMsgs()
     }
-
   }
 
+  const createNewSession = () => {
+    const id = Date.now().toString()
+    const newSession: ChatSession = {
+      id,
+      title: "New Chat",
+      createdAt: Date.now(),
+      messages: []
+    }
+    setSessions(prev => [newSession, ...prev])
+    setActiveSessionId(id)
+  }
+
+  useEffect(() => {
+    const saved = localStorage.getItem("chatSessions")
+    if (saved) {
+      const parsed: ChatSession[] = JSON.parse(saved)
+      setSessions(parsed)
+      setActiveSessionId(parsed[0]?.id || null)
+    } else {
+      createNewSession()
+    }
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem("chatSessions", JSON.stringify(sessions))
+  }, [sessions])
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -87,6 +152,25 @@ export default function Home() {
             <img width={18} src={"/menu-burger.png"} />
           </button>
         </div>
+
+        <div className="px-2 space-y-2">
+          <button
+            onClick={createNewSession}
+            className="w-full bg-neutral-700 hover:bg-neutral-600 py-2 rounded text-sm"
+          >
+            + New Chat
+          </button>
+
+          {sessions.map(s => (
+            <div
+              key={s.id}
+              onClick={() => setActiveSessionId(s.id)}
+              className={`cursor-pointer px-3 py-2 rounded text-sm truncate ${activeSessionId === s.id ? "bg-neutral-600" : "hover:bg-neutral-700"}`}
+            >
+              {s.title}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* main chat area */}
@@ -99,9 +183,8 @@ export default function Home() {
           <div className="px-3 py-1 rounded-full bg-[#9B1FE8]">A</div>
         </div>
 
+        {showGreetings && <GreetingsPrompt onPromptClick={handleMessage} />}
 
-        {showGreetings && <GreetingsPrompt onPromptClick={handleMessage} />
-        }
         <div className="flex-1 p-6 overflow-y-auto space-y-16">
           {msgs.map(m => (
             <div key={m.id} className="w-full max-w-4xl mx-auto px-4">
@@ -165,17 +248,20 @@ export default function Home() {
             />
             <div className="text-white flex justify-between items-center mt-2">
               <span className="text-neutral-400">Gemini 1.5 flash</span>
-            <p className=" text-xs text-neutral-500 -translate-x-5 translate-y-6 ">Built out of boredom by <a href="https://akshitt.me"><span className="text-neutral-400 hover:text-white hover:cursor-pointer underline">Akshit</span></a></p>
+              <p className=" text-xs text-neutral-500 -translate-x-5 translate-y-6 ">
+                Built out of boredom by{" "}
+                <a href="https://akshitt.me">
+                  <span className="text-neutral-400 hover:text-white hover:cursor-pointer underline">Akshit</span>
+                </a>
+              </p>
               <button
-                className={`px-3 py-3 rounded-full transition-all duration-200 active:scale-95 ${!input.trim() ? "bg-neutral-600 cursor-not-allowed" : "bg-white"
-                  }`}
+                className={`px-3 py-3 rounded-full transition-all duration-200 active:scale-95 ${!input.trim() ? "bg-neutral-600 cursor-not-allowed" : "bg-white"}`}
                 onClick={sendMsgs}
                 title={`${!input.trim() ? "Message requires text" : ""}`}
               >
                 <img src={"/up-arrow.png"} width={15} />
               </button>
             </div>
-            
           </div>
         </div>
       </div>
