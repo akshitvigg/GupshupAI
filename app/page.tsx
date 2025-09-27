@@ -263,8 +263,25 @@ export default function Home() {
       <div className="bg-[#0A0A0A] overflow-y-auto flex flex-col w-full">
         <div className="text-white px-4 md:px-20 h-14 items-center border-b border-b-neutral-800 flex justify-between">
           <div className="items-center flex text-lg md:text-xl">
-            <img src={"/gslogo.png"} className="h-8 md:h-11 w-auto object-contain" />
-            <span className="ml-2 -translate-x-5 sm:-translate-x-7">GupShupAI</span>
+            <button
+              className="md:hidden hover:bg-neutral-800/60 mr-3 rounded-full cursor-pointer p-2 transition-colors duration-200"
+              onClick={() => setSidebarOpen(true)}
+            >
+              <img width={18} src={"/menu-burger.png"} />
+            </button>
+
+            <div
+              className="flex items-center cursor-pointer hidden md:flex"
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+            >
+              <img src={"/gslogo.png"} className="h-8 md:h-11 w-auto object-contain" />
+              <span className="ml-2 -translate-x-5 sm:-translate-x-7">GupShupAI</span>
+            </div>
+
+            <div className="flex items-center md:hidden">
+              <img src={"/gslogo.png"} className="h-8 md:h-11 w-auto object-contain" />
+              <span className="ml-2 -translate-x-5 sm:-translate-x-7">GupShupAI</span>
+            </div>
           </div>
           <div className="px-2 md:px-3 py-1 rounded-full bg-[#9B1FE8] text-sm md:text-base">A</div>
         </div>
@@ -320,7 +337,7 @@ export default function Home() {
           <div ref={scrollRef}></div>
         </div>
 
-        {/* prompt area - better responsive sizing */}
+        {/* prompt area */}
         <div className="sticky bottom-0 flex justify-center px-4 md:px-0">
           <div className="p-3 md:p-4 w-full max-w-[600px] border-b-0 border border-neutral-800 rounded-t-2xl bg-[#171717]">
             <textarea
@@ -333,7 +350,7 @@ export default function Home() {
               placeholder="Write your query..."
             />
             <div className="text-white flex justify-between items-center mt-2">
-              <span className="text-neutral-400 text-xs md:text-sm">Gemini 1.5 flash</span>
+              <span className="text-neutral-400 text-xs md:text-sm">Gemini 2.5 flash</span>
               <p className="text-xs text-neutral-500  -translate-x-5 translate-y-6">
                 Built out of boredom by{" "}
                 <a href="https://akshitt.me">
