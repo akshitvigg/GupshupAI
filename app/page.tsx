@@ -182,8 +182,22 @@ export default function Home() {
 
   return (
     <div className="flex text-black h-screen">
+      {/* mobile overlay for sidebar */}
+      {sidebarOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-black/50 z-20"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* sidebar */}
-      <div className={` ${sidebarOpen ? "w-64" : "w-16"} transition-all duration-300 ease-in-out bg-[#0F0F0F] border-r border-r-neutral-700/50 text-white flex flex-col`}>
+      <div className={`
+      ${sidebarOpen ? "w-64" : "w-0 md:w-16"} 
+      ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
+      fixed md:relative h-full z-30 md:z-auto
+      transition-all duration-300 ease-in-out 
+      bg-[#0F0F0F] border-r border-r-neutral-700/50 text-white flex flex-col
+    `}>
         <div className="py-4 flex">
           <button
             className="hover:bg-neutral-800/60 ml-2 rounded-full cursor-pointer p-3 transition-colors duration-200"
@@ -195,7 +209,6 @@ export default function Home() {
 
         {sidebarOpen ? (
           <>
-            {/* scrollable chat sessions area */}
             <div className="flex-1 px-3 space-y-2 overflow-y-auto pb-4">
               <button
                 onClick={createNewSession}
@@ -211,7 +224,11 @@ export default function Home() {
                 {sessions.map(s => (
                   <div
                     key={s.id}
-                    onClick={() => setActiveSessionId(s.id)}
+                    onClick={() => {
+                      setActiveSessionId(s.id)
+                      // autoclose sidebar on mobile when selecting a chat
+                      if (window.innerWidth < 768) setSidebarOpen(false)
+                    }}
                     className={`group cursor-pointer px-3 py-3 rounded-xl text-sm transition-all duration-200 hover:scale-[1.01] ${activeSessionId === s.id
                       ? "bg-gradient-to-r from-neutral-700 to-neutral-600 shadow-md border border-neutral-600/50"
                       : "hover:bg-neutral-800/60 hover:shadow-sm"
@@ -244,27 +261,27 @@ export default function Home() {
 
       {/* main chat area */}
       <div className="bg-[#0A0A0A] overflow-y-auto flex flex-col w-full">
-        <div className="text-white px-20 h-14 items-center border-b border-b-neutral-800 flex justify-between">
-          <div className="items-center flex text-xl">
-            <img src={"/gslogo.png"} className="p-0 -translate-x-20 sm:-translate-x-0  h-11 w-auto object-contain" />
-            <span className=" -translate-x-25  sm:-translate-x-5">GupShupAI</span>
+        <div className="text-white px-4 md:px-20 h-14 items-center border-b border-b-neutral-800 flex justify-between">
+          <div className="items-center flex text-lg md:text-xl">
+            <img src={"/gslogo.png"} className="h-8 md:h-11 w-auto object-contain" />
+            <span className="ml-2 -translate-x-5 sm:-translate-x-7">GupShupAI</span>
           </div>
-          <div className="px-3 py-1 translate-x-14 sm:translate-x-0 rounded-full bg-[#9B1FE8]">A</div>
+          <div className="px-2 md:px-3 py-1 rounded-full bg-[#9B1FE8] text-sm md:text-base">A</div>
         </div>
 
         {showGreetings && <GreetingsPrompt onPromptClick={handleMessage} />}
 
-        <div className="flex-1 p-6 overflow-y-auto space-y-16">
+        <div className="flex-1 p-3 md:p-6 overflow-y-auto space-y-8 md:space-y-16">
           {msgs.map(m => (
-            <div key={m.id} className="w-full max-w-4xl mx-auto px-4">
+            <div key={m.id} className="w-full max-w-4xl mx-auto px-2 md:px-4">
               {m.role === "user" ? (
                 <div className="flex justify-end">
-                  <div className="inline-block max-w-[70%] bg-[#262626] text-white px-4 py-2 rounded-lg whitespace-pre-wrap break-words">
+                  <div className="inline-block max-w-[85%] md:max-w-[70%] bg-[#262626] text-white px-3 md:px-4 py-2 rounded-lg whitespace-pre-wrap break-words text-sm md:text-base">
                     {m.text}
                   </div>
                 </div>
               ) : (
-                <div className="prose prose-invert max-w-none text-gray-200 leading-relaxed">
+                <div className="prose prose-invert max-w-none text-gray-200 leading-relaxed text-sm md:text-base">
                   {m.text === "..." ? (
                     <span className="animate-pulse text-gray-400">Assistant is typing...</span>
                   ) : (
@@ -273,24 +290,24 @@ export default function Home() {
                         code: ({ children, className, ...props }) => {
                           const isInline = !className?.includes('language-')
                           return isInline ? (
-                            <code className="bg-[#171717] px-1 py-0.5 rounded text-sm" {...props}>
+                            <code className="bg-[#171717] px-1 py-0.5 rounded text-xs md:text-sm" {...props}>
                               {children}
                             </code>
                           ) : (
-                            <pre className="bg-[#171717] p-3 rounded-lg overflow-x-auto">
-                              <code className="text-sm" {...props}>
+                            <pre className="bg-[#171717] p-2 md:p-3 rounded-lg overflow-x-auto">
+                              <code className="text-xs md:text-sm" {...props}>
                                 {children}
                               </code>
                             </pre>
                           )
                         },
-                        h1: ({ children }) => <h1 className="text-2xl font-bold mb-4">{children}</h1>,
-                        h2: ({ children }) => <h2 className="text-xl font-bold mb-3">{children}</h2>,
-                        h3: ({ children }) => <h3 className="text-lg font-bold mb-2">{children}</h3>,
-                        ul: ({ children }) => <ul className="list-disc ml-6 mb-4">{children}</ul>,
-                        ol: ({ children }) => <ol className="list-decimal ml-6 mb-4">{children}</ol>,
+                        h1: ({ children }) => <h1 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">{children}</h1>,
+                        h2: ({ children }) => <h2 className="text-lg md:text-xl font-bold mb-2 md:mb-3">{children}</h2>,
+                        h3: ({ children }) => <h3 className="text-base md:text-lg font-bold mb-2">{children}</h3>,
+                        ul: ({ children }) => <ul className="list-disc ml-4 md:ml-6 mb-3 md:mb-4">{children}</ul>,
+                        ol: ({ children }) => <ol className="list-decimal ml-4 md:ml-6 mb-3 md:mb-4">{children}</ol>,
                         li: ({ children }) => <li className="mb-1">{children}</li>,
-                        p: ({ children }) => <p className="mb-3">{children}</p>,
+                        p: ({ children }) => <p className="mb-2 md:mb-3">{children}</p>,
                       } as Components}
                     >
                       {m.text}
@@ -303,12 +320,12 @@ export default function Home() {
           <div ref={scrollRef}></div>
         </div>
 
-        {/* prompt area */}
-        <div className="sticky bottom-0 flex justify-center">
-          <div className="p-4 w-[600px] border-b-0 border border-neutral-800 rounded-t-2xl bg-[#171717]">
+        {/* prompt area - better responsive sizing */}
+        <div className="sticky bottom-0 flex justify-center px-4 md:px-0">
+          <div className="p-3 md:p-4 w-full max-w-[600px] border-b-0 border border-neutral-800 rounded-t-2xl bg-[#171717]">
             <textarea
               ref={textAreaRef}
-              className="flex-1 text-white placeholder:text-[#A0A0A0] w-full outline-none rounded resize-none overflow-y-auto min-h-[40px] max-h-[120px] p-2"
+              className="flex-1 text-white placeholder:text-[#A0A0A0] w-full outline-none rounded resize-none overflow-y-auto min-h-[40px] max-h-[120px] p-2 text-sm md:text-base"
               rows={2}
               onKeyPress={handleKeypress}
               value={input}
@@ -316,15 +333,16 @@ export default function Home() {
               placeholder="Write your query..."
             />
             <div className="text-white flex justify-between items-center mt-2">
-              <span className="text-neutral-400">Gemini 1.5 flash</span>
-              <p className=" text-xs text-neutral-500 -translate-x-5 translate-y-6 ">
+              <span className="text-neutral-400 text-xs md:text-sm">Gemini 1.5 flash</span>
+              <p className="text-xs text-neutral-500 hidden md:block -translate-x-5 translate-y-6">
                 Built out of boredom by{" "}
                 <a href="https://akshitt.me">
                   <span className="text-neutral-400 hover:text-white hover:cursor-pointer underline">Akshit</span>
                 </a>
               </p>
               <button
-                className={`px-3 py-3 rounded-full transition-all duration-200 active:scale-95 ${!input.trim() ? "bg-neutral-600 cursor-not-allowed" : "bg-white cursor-pointer"}`}
+                className={`px-3 py-3 rounded-full transition-all duration-200 active:scale-95 ${!input.trim() ? "bg-neutral-600 cursor-not-allowed" : "bg-white cursor-pointer"
+                  }`}
                 onClick={sendMsgs}
                 title={`${!input.trim() ? "Message requires text" : ""}`}
               >
