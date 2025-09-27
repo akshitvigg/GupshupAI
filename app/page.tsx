@@ -7,7 +7,6 @@ import type { Components } from 'react-markdown'
 import GreetingsPrompt from "./components/greetings"
 import { IconPlus, IconTrash } from "@tabler/icons-react"
 
-
 type Message = {
   id: string;
   role: "user" | "assistant";
@@ -37,16 +36,31 @@ export default function Home() {
     if (showGreetings) setShowGreetings(false)
 
     const trimmed = message.trim()
-    if (!trimmed || !activeSessionId) return
+    if (!trimmed) return
+
+    let currentSessionId = activeSessionId
+    if (!currentSessionId) {
+      const id = Date.now().toString()
+      const newSession: ChatSession = {
+        id,
+        title: trimmed.slice(0, 20),
+        createdAt: Date.now(),
+        messages: []
+      }
+      setSessions(prev => [newSession, ...prev])
+      setActiveSessionId(id)
+      currentSessionId = id
+    }
 
     const userId = Date.now().toString()
     const assistantId = userId + "-assistant"
 
-    const conversationHistory = activeSession?.messages || []
+    const currentSession = sessions.find(s => s.id === currentSessionId)
+    const conversationHistory = currentSession?.messages || []
 
     setSessions(prev =>
       prev.map(s =>
-        s.id === activeSessionId
+        s.id === currentSessionId
           ? {
             ...s,
             title: s.messages.length === 0 ? trimmed.slice(0, 20) : s.title,
@@ -69,7 +83,7 @@ export default function Home() {
 
       setSessions(prev =>
         prev.map(s =>
-          s.id === activeSessionId
+          s.id === currentSessionId
             ? {
               ...s,
               messages: s.messages.map(m =>
@@ -82,7 +96,7 @@ export default function Home() {
     } catch {
       setSessions(prev =>
         prev.map(s =>
-          s.id === activeSessionId
+          s.id === currentSessionId
             ? {
               ...s,
               messages: s.messages.map(m =>
@@ -107,6 +121,7 @@ export default function Home() {
       sendMsgs()
     }
   }
+
   const createNewSession = () => {
     const id = Date.now().toString()
     const newSession: ChatSession = {
@@ -119,6 +134,7 @@ export default function Home() {
     setActiveSessionId(id)
     setShowGreetings(true)
   }
+
   useEffect(() => {
     if (activeSession) {
       setShowGreetings(activeSession.messages.length === 0)
@@ -129,14 +145,16 @@ export default function Home() {
     const saved = localStorage.getItem("chatSessions")
     if (saved) {
       const parsed: ChatSession[] = JSON.parse(saved)
-      setSessions(parsed)
-      setActiveSessionId(parsed[0]?.id || null)
-
-      if (parsed[0]?.messages.length > 0) {
-        setShowGreetings(false)
+      if (parsed.length > 0) {
+        setSessions(parsed)
+        const firstSession = parsed[0]
+        setActiveSessionId(firstSession.id)
+        setShowGreetings(firstSession.messages.length === 0)
+      } else {
+        setShowGreetings(true)
       }
     } else {
-      createNewSession()
+      setShowGreetings(true)
     }
   }, [])
 
@@ -157,11 +175,10 @@ export default function Home() {
 
   const clearChat = () => {
     localStorage.removeItem("chatSessions")
-    console.log("hello local calling")
     setSessions([])
     setActiveSessionId(null)
+    setShowGreetings(true)
   }
-
 
   return (
     <div className="flex text-black h-screen">
@@ -169,7 +186,7 @@ export default function Home() {
       <div className={` ${sidebarOpen ? "w-64" : "w-16"} transition-all duration-300 ease-in-out bg-[#0F0F0F] border-r border-r-neutral-700/50 text-white flex flex-col`}>
         <div className="py-4 flex">
           <button
-            className="hover:bg-neutral-800/60 ml-2 rounded-xl p-3 transition-colors duration-200"
+            className="hover:bg-neutral-800/60 ml-2 rounded-full cursor-pointer p-3 transition-colors duration-200"
             onClick={() => setSidebarOpen(!sidebarOpen)}
           >
             <img width={18} src={"/menu-burger.png"} />
@@ -182,7 +199,7 @@ export default function Home() {
             <div className="flex-1 px-3 space-y-2 overflow-y-auto pb-4">
               <button
                 onClick={createNewSession}
-                className="w-full bg-white  py-3 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer hover:bg-zinc-200  active:scale-95 shadow-lg"
+                className="w-full bg-white py-3 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer hover:bg-zinc-200 active:scale-95 shadow-lg"
               >
                 <span className="flex text-black items-center justify-center gap-2">
                   <IconPlus strokeWidth={2.5} size={19} />
@@ -201,7 +218,7 @@ export default function Home() {
                       }`}
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`w-2 h-2 rounded-full flex-shrink-0 transition-colors duration-200 ${activeSessionId === s.id ? "bg-white" : "bg-neutral-500 group-hover:bg-neutral-400"
+                      <div className={`w-2 h-2 rounded-full flex-shrink-0 transition-colors duration-200 ${activeSessionId === s.id ? "bg-white" : "bg-neutral-600 group-hover:bg-neutral-400"
                         }`} />
                       <span className="truncate font-normal">{s.title}</span>
                     </div>
@@ -213,11 +230,10 @@ export default function Home() {
             <div className="p-3 border-t border-neutral-700/50">
               <button
                 onClick={clearChat}
-                className="w-full bg-[#B22222] hover:bg-[#B33333] cursor-pointer  py-3 rounded-xl text-sm font-medium transition-all duration-200 hover:scale-[1.02] active:scale-95 shadow-lg backdrop-blur-sm"
+                className="w-full bg-[#B22222] hover:bg-[#B33333] cursor-pointer py-3 rounded-xl text-sm font-medium transition-all duration-200 hover:scale-[1.02] active:scale-95 shadow-lg backdrop-blur-sm"
               >
                 <span className="flex items-center justify-center gap-2">
                   <IconTrash size={18} />
-
                   Clear Chats
                 </span>
               </button>
@@ -308,7 +324,7 @@ export default function Home() {
                 </a>
               </p>
               <button
-                className={`px-3 py-3 rounded-full transition-all duration-200 active:scale-95 ${!input.trim() ? "bg-neutral-600 cursor-not-allowed" : "bg-white"}`}
+                className={`px-3 py-3 rounded-full transition-all duration-200 active:scale-95 ${!input.trim() ? "bg-neutral-600 cursor-not-allowed" : "bg-white cursor-pointer"}`}
                 onClick={sendMsgs}
                 title={`${!input.trim() ? "Message requires text" : ""}`}
               >
