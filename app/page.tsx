@@ -152,8 +152,7 @@ export default function Home() {
             <img width={18} src={"/menu-burger.png"} />
           </button>
         </div>
-
-        <div className="px-2 space-y-2">
+        {sidebarOpen ? <div className="px-2 space-y-2">
           <button
             onClick={createNewSession}
             className="w-full bg-neutral-700 hover:bg-neutral-600 py-2 rounded text-sm"
@@ -171,6 +170,7 @@ export default function Home() {
             </div>
           ))}
         </div>
+          : ""}
       </div>
 
       {/* main chat area */}
