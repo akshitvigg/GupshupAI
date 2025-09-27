@@ -7,8 +7,8 @@ interface GreetingsPromptProps {
 export default function GreetingsPrompt({ onPromptClick }: GreetingsPromptProps) {
   const prompts = [
     "How does AI Work?",
-    "Are black holes real?",
-    "How many Rs in the word 'strawberry'?",
+    "What happens if you fall into a black hole?",
+    "Explain quantum physics like I’m 5",
     "What is the meaning of life?"
   ]
 
