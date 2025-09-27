@@ -334,7 +334,7 @@ export default function Home() {
             />
             <div className="text-white flex justify-between items-center mt-2">
               <span className="text-neutral-400 text-xs md:text-sm">Gemini 1.5 flash</span>
-              <p className="text-xs text-neutral-500 hidden md:block -translate-x-5 translate-y-6">
+              <p className="text-xs text-neutral-500  -translate-x-5 translate-y-6">
                 Built out of boredom by{" "}
                 <a href="https://akshitt.me">
                   <span className="text-neutral-400 hover:text-white hover:cursor-pointer underline">Akshit</span>
