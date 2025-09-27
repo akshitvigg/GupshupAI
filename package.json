@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
+    "@tabler/icons-react": "^3.35.0",
     "axios": "^1.12.2",
     "geist": "^1.5.1",
     "next": "15.5.3",

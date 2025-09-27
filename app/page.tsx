@@ -1,4 +1,3 @@
-
 "use client"
 
 import axios from "axios"
@@ -6,6 +5,8 @@ import { useEffect, useRef, useState } from "react"
 import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'
 import GreetingsPrompt from "./components/greetings"
+import { IconPlus, IconTrash } from "@tabler/icons-react"
+
 
 type Message = {
   id: string;
@@ -41,6 +42,8 @@ export default function Home() {
     const userId = Date.now().toString()
     const assistantId = userId + "-assistant"
 
+    const conversationHistory = activeSession?.messages || []
+
     setSessions(prev =>
       prev.map(s =>
         s.id === activeSessionId
@@ -58,7 +61,10 @@ export default function Home() {
     )
 
     try {
-      const res = await axios.post("api/chat", { message: trimmed })
+      const res = await axios.post("api/chat", {
+        message: trimmed,
+        conversationHistory: conversationHistory
+      })
       const text = res.data.text ?? "No response"
 
       setSessions(prev =>
@@ -101,7 +107,6 @@ export default function Home() {
       sendMsgs()
     }
   }
-
   const createNewSession = () => {
     const id = Date.now().toString()
     const newSession: ChatSession = {
@@ -112,7 +117,13 @@ export default function Home() {
     }
     setSessions(prev => [newSession, ...prev])
     setActiveSessionId(id)
+    setShowGreetings(true)
   }
+  useEffect(() => {
+    if (activeSession) {
+      setShowGreetings(activeSession.messages.length === 0)
+    }
+  }, [activeSession])
 
   useEffect(() => {
     const saved = localStorage.getItem("chatSessions")
@@ -120,6 +131,10 @@ export default function Home() {
       const parsed: ChatSession[] = JSON.parse(saved)
       setSessions(parsed)
       setActiveSessionId(parsed[0]?.id || null)
+
+      if (parsed[0]?.messages.length > 0) {
+        setShowGreetings(false)
+      }
     } else {
       createNewSession()
     }
@@ -140,41 +155,79 @@ export default function Home() {
     }
   }, [input])
 
+  const clearChat = () => {
+    localStorage.removeItem("chatSessions")
+    console.log("hello local calling")
+    setSessions([])
+    setActiveSessionId(null)
+  }
+
+
   return (
-    <div className="flex text-black min-h-screen">
+    <div className="flex text-black h-screen">
       {/* sidebar */}
-      <div className={`${sidebarOpen ? "w-44" : "w-16"} transition-all duration-300 ease-in-out bg-[#171717] border-r border-r-neutral-800 text-white`}>
+      <div className={` ${sidebarOpen ? "w-64" : "w-16"} transition-all duration-300 ease-in-out bg-[#0F0F0F] border-r border-r-neutral-700/50 text-white flex flex-col`}>
         <div className="py-4 flex">
           <button
-            className="hover:bg-neutral-800 ml-2 rounded-full p-3"
+            className="hover:bg-neutral-800/60 ml-2 rounded-xl p-3 transition-colors duration-200"
             onClick={() => setSidebarOpen(!sidebarOpen)}
           >
             <img width={18} src={"/menu-burger.png"} />
           </button>
         </div>
-        {sidebarOpen ? <div className="px-2 space-y-2">
-          <button
-            onClick={createNewSession}
-            className="w-full bg-neutral-700 hover:bg-neutral-600 py-2 rounded text-sm"
-          >
-            + New Chat
-          </button>
 
-          {sessions.map(s => (
-            <div
-              key={s.id}
-              onClick={() => setActiveSessionId(s.id)}
-              className={`cursor-pointer px-3 py-2 rounded text-sm truncate ${activeSessionId === s.id ? "bg-neutral-600" : "hover:bg-neutral-700"}`}
-            >
-              {s.title}
+        {sidebarOpen ? (
+          <>
+            {/* scrollable chat sessions area */}
+            <div className="flex-1 px-3 space-y-2 overflow-y-auto pb-4">
+              <button
+                onClick={createNewSession}
+                className="w-full bg-white  py-3 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer hover:bg-zinc-200  active:scale-95 shadow-lg"
+              >
+                <span className="flex text-black items-center justify-center gap-2">
+                  <IconPlus strokeWidth={2.5} size={19} />
+                  New Chat
+                </span>
+              </button>
+
+              <div className="space-y-1 pt-2">
+                {sessions.map(s => (
+                  <div
+                    key={s.id}
+                    onClick={() => setActiveSessionId(s.id)}
+                    className={`group cursor-pointer px-3 py-3 rounded-xl text-sm transition-all duration-200 hover:scale-[1.01] ${activeSessionId === s.id
+                      ? "bg-gradient-to-r from-neutral-700 to-neutral-600 shadow-md border border-neutral-600/50"
+                      : "hover:bg-neutral-800/60 hover:shadow-sm"
+                      }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-2 h-2 rounded-full flex-shrink-0 transition-colors duration-200 ${activeSessionId === s.id ? "bg-white" : "bg-neutral-500 group-hover:bg-neutral-400"
+                        }`} />
+                      <span className="truncate font-normal">{s.title}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-          ))}
-        </div>
-          : ""}
+
+            <div className="p-3 border-t border-neutral-700/50">
+              <button
+                onClick={clearChat}
+                className="w-full bg-[#B22222] hover:bg-[#B33333] cursor-pointer  py-3 rounded-xl text-sm font-medium transition-all duration-200 hover:scale-[1.02] active:scale-95 shadow-lg backdrop-blur-sm"
+              >
+                <span className="flex items-center justify-center gap-2">
+                  <IconTrash size={18} />
+
+                  Clear Chats
+                </span>
+              </button>
+            </div>
+          </>
+        ) : ""}
       </div>
 
       {/* main chat area */}
-      <div className="bg-[#0A0A0A] flex flex-col w-full">
+      <div className="bg-[#0A0A0A] overflow-y-auto flex flex-col w-full">
         <div className="text-white px-20 h-14 items-center border-b border-b-neutral-800 flex justify-between">
           <div className="items-center flex text-xl">
             <img src={"/gslogo.png"} className="p-0 h-11 w-auto object-contain" />
